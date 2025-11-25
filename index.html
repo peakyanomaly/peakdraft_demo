@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peak Draft - Gaming Draft System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        const App = {
+            currentPage: 'home',
+            selectedGame: null,
+            username: '',
+            isLoggedIn: false,
+            loginInput: '',
+            teamName: '',
+            gameQuantity: '1',
+            goldLane: '',
+            support: '',
+            midLane: '',
+            jungle: '',
+            expLane: '',
+
+            games: [
+                { id: 'mlbb', name: 'MLBB', platform: 'mobile', img: '🎮' },
+                { id: 'rov', name: 'ROV', platform: 'mobile', img: '⚔️' },
+                { id: 'hok', name: 'HOK Global', platform: 'mobile', img: '🐮' },
+                { id: 'pokemon', name: 'Pokemon Unite', platform: 'mobile', img: '⭐' }
+            ],
+
+            init() {
+                this.render();
+            },
+
+            handleLogin() {
+                if (this.loginInput.trim()) {
+                    this.username = this.loginInput;
+                    this.isLoggedIn = true;
+                    this.render();
+                }
+            },
+
+            handleGameSelect(game) {
+                if (!this.isLoggedIn) {
+                    alert('กรุณา Login ก่อนเลือกเกม!');
+                    return;
+                }
+                this.selectedGame = game;
+                this.currentPage = 'teamsetup';
+                this.render();
+            },
+
+            handleCreateRoom() {
+                if (!this.teamName) {
+                    alert('Please enter team name!');
+                    return;
+                }
+                alert(`Room created for ${this.teamName}!`);
+            },
+
+            handleEnterRoom() {
+                alert('Enter room feature - coming soon!');
+            },
+
+            renderHomePage() {
+                return `
+                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
+                        <!-- Header -->
+                        <div class="bg-white shadow-md">
+                            <div class="max-w-7xl mx-auto px-4 py-4">
+                                <div class="flex items-center justify-between">
+                                    <!-- Logo -->
+                                    <div class="flex items-center space-x-3">
+                                        <div class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                            Peak Draft
+                                        </div>
+                                    </div>
+
+                                    <!-- Navigation -->
+                                    <div class="flex items-center space-x-2">
+                                        ${!this.isLoggedIn ? `
+                                            <input
+                                                type="text"
+                                                id="loginInput"
+                                                placeholder="Enter username"
+                                                value="${this.loginInput}"
+                                                class="px-4 py-2 border-2 border-blue-300 rounded-full focus:outline-none focus:border-blue-500"
+                                            />
+                                            <button
+                                                onclick="app.loginInput = document.getElementById('loginInput').value; app.handleLogin()"
+                                                class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all font-medium border-2 border-blue-500"
+                                            >
+                                                Login
+                                            </button>
+                                        ` : `
+                                            <div class="px-5 py-2 bg-blue-100 text-blue-700 rounded-full font-medium border-2 border-blue-400">
+                                                👤 ${this.username}
+                                            </div>
+                                            <button 
+                                                onclick="app.currentPage = 'profile'; app.render()"
+                                                class="px-5 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-all"
+                                            >
+                                                Profile
+                                            </button>
+                                        `}
+                                        <button 
+                                            onclick="app.currentPage = 'history'; app.render()"
+                                            class="px-5 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-all"
+                                        >
+                                            History
+                                        </button>
+                                        <button class="px-5 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-all">
+                                            Contact us
+                                        </button>
+                                        <button class="px-5 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-all">
+                                            Report a problem
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="max-w-7xl mx-auto px-4 py-12">
+                            <div class="bg-gray-200 rounded-3xl p-8 shadow-lg">
+                                <!-- Platform Selector -->
+                                <div class="flex justify-center space-x-4 mb-8">
+                                    <button class="px-8 py-3 bg-white rounded-full font-medium shadow-md hover:shadow-lg transition-all">
+                                        Mobile
+                                    </button>
+                                    <button class="px-8 py-3 bg-white rounded-full font-medium shadow-md hover:shadow-lg transition-all">
+                                        PC
+                                    </button>
+                                </div>
+
+                                <!-- Games Grid -->
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+                                    ${this.games.map((game, index) => `
+                                        <div
+                                            onclick="app.handleGameSelect(app.games[${index}])"
+                                            class="bg-white rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-md hover:shadow-xl"
+                                        >
+                                            <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center text-4xl mb-3 shadow-lg">
+                                                ${game.img}
+                                            </div>
+                                            <div class="font-semibold text-gray-800">${game.name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderTeamSetupPage() {
+                return `
+                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+                        <div class="max-w-4xl mx-auto">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg">
+                                        🎮
+                                    </div>
+                                    <div class="text-2xl font-bold text-gray-800">
+                                        ${this.selectedGame?.name || 'MLBB'}
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3">
+                                    <button
+                                        onclick="app.currentPage = 'home'; app.render()"
+                                        class="px-6 py-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-all"
+                                    >
+                                        Back
+                                    </button>
+                                    <button
+                                        onclick="app.currentPage = 'history'; app.render()"
+                                        class="px-6 py-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-all"
+                                    >
+                                        History
+                                    </button>
+                                    <div class="px-6 py-2 bg-gray-300 rounded-full">
+                                        ${this.username || 'your username'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Form -->
+                            <div class="bg-gray-200 rounded-3xl p-8 shadow-lg">
+                                <div class="grid grid-cols-2 gap-8">
+                                    <!-- Left Column -->
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Team name</label>
+                                            <input
+                                                type="text"
+                                                id="teamName"
+                                                value="${this.teamName}"
+                                                onchange="app.teamName = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                placeholder="Enter team name"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Gold lane</label>
+                                            <select
+                                                id="goldLane"
+                                                onchange="app.goldLane = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                <option value="">Select player</option>
+                                                <option value="Peaky">Player 1</option>
+                                                <option value="PeakyAnomaly">Player 2</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Support</label>
+                                            <select
+                                                id="support"
+                                                onchange="app.support = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                <option value="">Select player</option>
+                                                <option value="Fairplayer">Player 1</option>
+                                                <option value="Charin">Player 2</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Mid lane</label>
+                                            <select
+                                                id="midLane"
+                                                onchange="app.midLane = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                <option value="">Select player</option>
+                                                <option value="Peachy">Player 1</option>
+                                                <option value="Peacho">Player 2</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Jungle</label>
+                                            <select
+                                                id="jungle"
+                                                onchange="app.jungle = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                <option value="">Select player</option>
+                                                <option value="Srh">Player 1</option>
+                                                <option value="Benjapon">Player 2</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Exp lane</label>
+                                            <select
+                                                id="expLane"
+                                                onchange="app.expLane = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                <option value="">Select player</option>
+                                                <option value="Nathanzq">Player 1</option>
+                                                <option value="Nathanqc">Player 2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="block text-gray-700 font-medium mb-2">Game Quantity 1-10</label>
+                                            <select
+                                                id="gameQuantity"
+                                                onchange="app.gameQuantity = this.value"
+                                                class="w-full px-4 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none bg-white"
+                                            >
+                                                ${[1,2,3,4,5,6,7,8,9,10].map(num => `
+                                                    <option value="${num}" ${this.gameQuantity == num ? 'selected' : ''}>${num}</option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+
+                                        <div class="flex flex-col space-y-4 mt-auto pt-48">
+                                            <button
+                                                onclick="app.handleEnterRoom()"
+                                                class="w-full px-6 py-4 bg-white rounded-full hover:bg-gray-100 transition-all font-medium shadow-md hover:shadow-lg"
+                                            >
+                                                Enter room
+                                            </button>
+                                            <button
+                                                onclick="app.handleCreateRoom()"
+                                                class="w-full px-6 py-4 bg-white rounded-full hover:bg-gray-100 transition-all font-medium shadow-md hover:shadow-lg"
+                                            >
+                                                Create room
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderHistoryPage() {
+                return `
+                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+                        <div class="max-w-4xl mx-auto">
+                            <div class="flex items-center justify-between mb-8">
+                                <h1 class="text-3xl font-bold text-gray-800">History</h1>
+                                <button
+                                    onclick="app.currentPage = 'home'; app.render()"
+                                    class="px-6 py-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-all"
+                                >
+                                    Back
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-3xl p-8 shadow-lg">
+                                <p class="text-gray-600">No history yet. Start creating rooms!</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderProfilePage() {
+                return `
+                    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+                        <div class="max-w-4xl mx-auto">
+                            <div class="flex items-center justify-between mb-8">
+                                <h1 class="text-3xl font-bold text-gray-800">Profile</h1>
+                                <button
+                                    onclick="app.currentPage = 'home'; app.render()"
+                                    class="px-6 py-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-all"
+                                >
+                                    Back
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-3xl p-8 shadow-lg">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl">
+                                        👤
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-gray-800 mb-2">${this.username}</h2>
+                                    <p class="text-gray-600">Gaming enthusiast</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            render() {
+                const appDiv = document.getElementById('app');
+                
+                if (this.currentPage === 'home') {
+                    appDiv.innerHTML = this.renderHomePage();
+                } else if (this.currentPage === 'teamsetup') {
+                    appDiv.innerHTML = this.renderTeamSetupPage();
+                } else if (this.currentPage === 'history') {
+                    appDiv.innerHTML = this.renderHistoryPage();
+                } else if (this.currentPage === 'profile') {
+                    appDiv.innerHTML = this.renderProfilePage();
+                }
+
+                // Add event listener for Enter key on login
+                const loginInput = document.getElementById('loginInput');
+                if (loginInput) {
+                    loginInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.loginInput = loginInput.value;
+                            this.handleLogin();
+                        }
+                    });
+                }
+            }
+        };
+
+        // Make app globally accessible
+        const app = App;
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
